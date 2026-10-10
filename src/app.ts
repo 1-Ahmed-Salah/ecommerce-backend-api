@@ -11,6 +11,7 @@ import express from "express";
  */
 import AuthRouter from "./routes/auth.route";
 import { errorHandler, notFound } from "./middlewares/error.middleware";
+import { protect } from "./middlewares/protect.middleware";
 
 const app = express();
 
