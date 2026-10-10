@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { prisma } from "../config/db";
 import { hashSalt } from "../secrets";
 import { generateToken } from "../utils/generateToken";
+import { ApiError } from "../utils/apiError";
 
 /**
  * @desc    Register a new user
@@ -17,7 +18,7 @@ export const register = asyncHandler(async(req, res, next)=> {
         where: { email }
     })
     if(userExists) {
-        throw new Error("User already exists");
+        return next(new ApiError("User already exists", 400));
     }
 
     const salt = await bcrypt.genSalt(hashSalt);
@@ -32,7 +33,7 @@ export const register = asyncHandler(async(req, res, next)=> {
     })
 
     if(!user) {
-        throw new Error("Something went wrong");
+        return next(new ApiError("Something went wrong", 400));
     }
 
     res.status(201).json({
@@ -59,11 +60,11 @@ export const login = asyncHandler(async(req, res, next)=> {
         }
     })
     if(!user) {
-        throw new Error("invalid credentials");
+        return next(new ApiError("invalid credentials", 400));
     }
 
     if(!bcrypt.compareSync(password, user.password)) {
-        throw new Error("invalid credentials");
+        return next(new ApiError("invalid credentials", 400));
     }
 
     const token = generateToken(user.id);

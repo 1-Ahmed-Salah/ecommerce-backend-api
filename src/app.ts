@@ -10,6 +10,7 @@ import express from "express";
  * Routes
  */
 import AuthRouter from "./routes/auth.route";
+import { errorHandler, notFound } from "./middlewares/error.middleware";
 
 const app = express();
 
@@ -21,6 +22,11 @@ app.use('/health', (req, res)=> {
     res.status(200).json({ message: "ok" });
 })
 
+// Routes
 app.use('/api/v1/auth', AuthRouter);
+
+// Global errors handler
+app.use(notFound);
+app.use(errorHandler);
 
 export { app };
