@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { prisma } from "../config/db";
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/apiError";
+import { asyncHandler, ApiError } from "../utils";
 import { JWT_SECRET } from "../secrets";
 
 export const protect = asyncHandler(async(req, res, next)=> {

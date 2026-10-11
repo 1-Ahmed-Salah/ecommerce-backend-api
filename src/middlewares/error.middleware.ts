@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ApiError } from "../utils/apiError";
+import { ApiError } from "../utils";
 import { NODE_DEV } from "../secrets";
 
 export const notFound = ( req: Request, res: Response, next: NextFunction) => {

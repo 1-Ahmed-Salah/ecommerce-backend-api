@@ -1,6 +1,6 @@
-import { RequestHandler } from "express";
 import z from "zod";
-import { ApiError } from "../utils/apiError";
+import { RequestHandler } from "express";
+import { ApiError } from "../utils";
 
 export const validateRequest = (schema:  z.ZodObject): RequestHandler => (req, res, next) => {
     const result = schema.safeParse(req.body);

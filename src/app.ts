@@ -9,9 +9,8 @@ import express from "express";
 /**
  * Routes
  */
-import AuthRouter from "./routes/auth.route";
+import { AuthRoute, ProductRoute } from "./routes";
 import { errorHandler, notFound } from "./middlewares/error.middleware";
-import { protect } from "./middlewares/protect.middleware";
 
 const app = express();
 
@@ -24,7 +23,8 @@ app.use('/health', (req, res)=> {
 })
 
 // Routes
-app.use('/api/v1/auth', AuthRouter);
+app.use('/api/v1/auth', AuthRoute);
+app.use('/api/v1/products', ProductRoute);
 
 // Global errors handler
 app.use(notFound);

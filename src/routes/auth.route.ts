@@ -1,11 +1,26 @@
 import { Router } from "express";
-import { login, register } from "../controllers/auth.controller";
-import { validateRequest } from "../middlewares/validateRequest.middleware";
-import { loginValidate, registerValidate } from "../validators/auth.validator";
+import { getMe, login, register } from "../controllers/auth.controller";
+import { protect, validateRequest } from "../middlewares";
+import { loginValidate, registerValidate } from "../validators";
 
 const router = Router();
 
-router.post('/register', validateRequest(registerValidate), register);
-router.post('/login', validateRequest(loginValidate), login);
+router.post(
+    '/register', 
+    validateRequest(registerValidate), 
+    register
+);
+
+router.post(
+    '/login', 
+    validateRequest(loginValidate), 
+    login
+);
+
+router.get(
+    '/me', 
+    protect, 
+    getMe
+);
 
 export default router;

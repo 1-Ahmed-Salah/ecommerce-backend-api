@@ -1,9 +1,7 @@
 import bcrypt from "bcryptjs";
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler, ApiError, generateToken } from "../utils";
 import { prisma } from "../config/db";
 import { hashSalt } from "../secrets";
-import { generateToken } from "../utils/generateToken";
-import { ApiError } from "../utils/apiError";
 
 /**
  * @desc    Register a new user
@@ -74,9 +72,29 @@ export const login = asyncHandler(async(req, res, next)=> {
         message: "user logged in successfully",
         token,
         data: {
-            id: user.id,
-            username: user.username,
-            email: user.email
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            }
         }
     })
 })
+
+/**
+ * @desc    Get current user
+ * @route   POST /api/v1/auth/me
+ * @access  Private
+ */
+export const getMe = asyncHandler(async(req, res, next)=> {
+    const user = req.user;
+    res.status(200).json({
+        success: true,
+        data: {
+            user: {
+                ...user
+            }
+        }
+    })
+})
+
