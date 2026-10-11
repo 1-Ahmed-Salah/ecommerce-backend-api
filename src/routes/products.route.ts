@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { protect, RBAC } from "../middlewares";
+import { protect, RBAC, validateRequest } from "../middlewares";
 import { createProduct, deleteProduct, getProductById, listProducts, updaateProduct } from "../controllers/products.controller";
 import { USER_ROLE } from "../../generated/prisma/enums";
+import { createProductValidate, updateProductValidate } from "../validators";
 
 const router = Router();
 
@@ -12,7 +13,8 @@ router.route('/')
     )
     .post(
         protect, 
-        RBAC(USER_ROLE.ADMIN), 
+        RBAC(USER_ROLE.ADMIN),
+        validateRequest(createProductValidate),
         createProduct
     )
 
@@ -24,6 +26,7 @@ router.route('/:id')
     .put(
         protect,
         RBAC(USER_ROLE.ADMIN),
+        validateRequest(updateProductValidate),
         updaateProduct
     )
     .delete(
