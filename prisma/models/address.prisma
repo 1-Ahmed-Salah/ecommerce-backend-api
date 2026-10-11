@@ -1,0 +1,14 @@
+model Address {
+    id         String   @id @default(uuid())
+    lineOne    String
+    lineTwo    String
+    city       String
+    country    String
+    pincode    String
+    userId     String
+    user       User     @relation(fields: [userId], references: [id])
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("addresses")
+}

@@ -11,6 +11,7 @@ model User {
     role       USER_ROLE @default(USER)
     created_at DateTime  @default(now())
     updated_at DateTime  @updatedAt
+    addresses  Address[]
 
     @@map("users")
 }
