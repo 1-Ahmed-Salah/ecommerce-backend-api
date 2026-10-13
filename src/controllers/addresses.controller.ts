@@ -29,7 +29,7 @@ export const addAddress = asyncHandler(async(req, res, next)=> {
 
 /**
  * @desc    Delete user address
- * @route   DELETE /api/v1/addresses/id
+ * @route   DELETE /api/v1/addresses/:id
  * @access  Private (user himself)
  */
 export const deleteAddress = asyncHandler(async(req, res, next)=> {
@@ -56,3 +56,25 @@ export const deleteAddress = asyncHandler(async(req, res, next)=> {
         }
     })
 })
+
+/**
+ * @desc    List the addresses
+ * @route   GET /api/v1/addresses
+ * @access  Private (user himself)
+ */
+export const listAddresses = asyncHandler(async(req, res, next)=> {
+
+    const userId = req.user.id;
+
+    const addresses = await prisma.address.findMany({
+        where: { userId }
+    })
+
+    res.status(200).json({
+        success: true,
+        data: {
+            addresses
+        }
+    })
+})
+
