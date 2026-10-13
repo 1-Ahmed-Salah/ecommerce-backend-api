@@ -9,7 +9,7 @@ import express from "express";
 /**
  * Routes
  */
-import { AuthRoute, ProductRoute } from "./routes";
+import { AuthRoute, ProductRoute, AddressRoute } from "./routes";
 import { errorHandler, notFound } from "./middlewares/error.middleware";
 
 const app = express();
@@ -25,6 +25,7 @@ app.use('/health', (req, res)=> {
 // Routes
 app.use('/api/v1/auth', AuthRoute);
 app.use('/api/v1/products', ProductRoute);
+app.use('/api/v1/addresses', AddressRoute);
 
 // Global errors handler
 app.use(notFound);
