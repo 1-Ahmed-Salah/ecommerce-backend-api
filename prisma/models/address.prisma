@@ -6,7 +6,7 @@ model Address {
     country    String
     pincode    String
     userId     String
-    user       User     @relation(fields: [userId], references: [id])
+    user       User     @relation("AddAddresses", fields: [userId], references: [id])
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
