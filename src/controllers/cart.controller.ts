@@ -60,3 +60,45 @@ export const addItemToCart = asyncHandler(async(req, res, next)=> {
     })
 })
 
+
+
+/**
+ * @desc    Delete item from cart
+ * @route   DELETE /api/v1/cart/:id
+ * @access  Private (user himself)
+ */
+export const deleteItemFromCart = asyncHandler(async (req, res, next)=> {
+
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // check if cart item belong to the same user
+    const cartItem = await prisma.cartItem.findUnique({
+        where: {
+            id
+        }
+    })
+
+    if(!cartItem) {
+        return next(new ApiError("cart item does not exist", 404));
+    }
+
+    // check if user own this cart item
+    if(cartItem.userId !== userId) {
+        return next(new ApiError("cart item does not belong to user", 401));
+    }
+
+    const deletedItem = await prisma.cartItem.delete({
+        where: {
+            id
+        }
+    })
+
+    res.status(200).json({
+        success: true,
+        message: "cart item deleted successfully",
+        data: {
+            id: deletedItem.id
+        }
+    })
+})

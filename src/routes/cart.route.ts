@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { protect, validateRequest } from "../middlewares";
 import { createCartValidate } from "../validators";
-import { addItemToCart } from "../controllers/cart.controller";
+import { addItemToCart, deleteItemFromCart } from "../controllers/cart.controller";
 
 const router = Router();
 
@@ -10,6 +10,12 @@ router.route("/")
         protect,
         validateRequest(createCartValidate),
         addItemToCart
+    )
+
+router.route("/:id")
+    .delete(
+        protect,
+        deleteItemFromCart
     )
 
 export default router;
