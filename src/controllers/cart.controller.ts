@@ -37,7 +37,7 @@ export const addItemToCart = asyncHandler(async(req, res, next)=> {
             },
             data: {
                 quantity: {
-                    increment: 1
+                    increment: quantity || 1
                 }
             }
         })
@@ -59,5 +59,4 @@ export const addItemToCart = asyncHandler(async(req, res, next)=> {
         }
     })
 })
-
 
