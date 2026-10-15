@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { protect, validateRequest } from "../middlewares";
-import { createCartValidate } from "../validators";
-import { addItemToCart, deleteItemFromCart } from "../controllers/cart.controller";
+import { createCartValidate, updateQuantityValidate } from "../validators";
+import { addItemToCart, changeQuantity, deleteItemFromCart } from "../controllers/cart.controller";
 
 const router = Router();
 
@@ -13,6 +13,11 @@ router.route("/")
     )
 
 router.route("/:id")
+    .put(
+        protect,
+        validateRequest(updateQuantityValidate),
+        changeQuantity
+    )
     .delete(
         protect,
         deleteItemFromCart
