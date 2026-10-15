@@ -5,3 +5,6 @@ export const createCartValidate = z.object({
     quantity: z.number().optional()
 })
 
+export const updateQuantityValidate = z.object({
+    quantity: z.number()
+})

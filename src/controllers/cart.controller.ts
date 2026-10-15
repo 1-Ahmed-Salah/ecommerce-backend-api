@@ -60,8 +60,6 @@ export const addItemToCart = asyncHandler(async(req, res, next)=> {
     })
 })
 
-
-
 /**
  * @desc    Delete item from cart
  * @route   DELETE /api/v1/cart/:id
@@ -99,6 +97,80 @@ export const deleteItemFromCart = asyncHandler(async (req, res, next)=> {
         message: "cart item deleted successfully",
         data: {
             id: deletedItem.id
+        }
+    })
+})
+
+/**
+ * @desc    Change the quantity
+ * @route   PUT /api/v1/cart/:id
+ * @access  Private (user himself)
+ */
+export const changeQuantity = asyncHandler(async(req, res, next)=> {
+
+    const { id } = req.params;
+    const { quantity } = req.body;
+
+    const userId = req.user.id;
+
+    const cartItem = await prisma.cartItem.findUnique({
+        where: {
+            id
+        }
+    })
+    if(!cartItem) {
+        return next(new ApiError("cart item does not exist", 404));
+    }
+
+    if(cartItem.userId !== userId) {
+        return next(new ApiError("cart item does not belong to user", 401));
+    }
+
+    const updatedCart = await prisma.cartItem.update({
+        where: {
+            id
+        },
+        data: {
+            quantity
+        }
+    })
+    if(!updatedCart) {
+         return next(new ApiError("something went wrong", 400));
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "quantity updated successfully",
+        data: {
+            item: {
+                ...updatedCart
+            }
+        }
+    })
+})
+
+/**
+ * @desc    Get cart items
+ * @route   GET /api/v1/cart
+ * @access  Private (user himself)
+ */
+export const getCart = asyncHandler(async(req, res, next)=> {
+
+    const userId = req.user.id;
+
+    const cart = await prisma.cartItem.findMany({
+        where: {
+            userId
+        },
+        include: {
+            product: true
+        }
+    })
+
+    res.status(200).json({
+        success: true,
+        data: {
+            cart
         }
     })
 })
