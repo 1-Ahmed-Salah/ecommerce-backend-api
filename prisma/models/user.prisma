@@ -4,16 +4,17 @@ enum USER_ROLE {
 }
 
 model User {
-    id                     String    @id @default(uuid())
-    username               String    @unique
-    email                  String    @unique
+    id                     String     @id @default(uuid())
+    username               String     @unique
+    email                  String     @unique
     password               String
-    role                   USER_ROLE @default(USER)
+    role                   USER_ROLE  @default(USER)
     defaultShippingAddress String?
     defaultBillingAddress  String?
-    addresses              Address[] @relation("AddAddresses")
-    created_at             DateTime  @default(now())
-    updated_at             DateTime  @updatedAt
+    addresses              Address[]  @relation("AddAddresses")
+    created_at             DateTime   @default(now())
+    updated_at             DateTime   @updatedAt
+    cartItems              CartItem[]
 
     @@map("users")
 }

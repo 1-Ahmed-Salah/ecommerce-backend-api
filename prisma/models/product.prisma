@@ -1,11 +1,12 @@
 model Product {
-    id          String   @id @default(uuid())
+    id          String     @id @default(uuid())
     name        String
     description String
-    price       Decimal  @default(0.0)
+    price       Decimal    @default(0.0)
     tags        String
-    created_at  DateTime @default(now())
-    updated_at  DateTime @updatedAt
+    created_at  DateTime   @default(now())
+    updated_at  DateTime   @updatedAt
+    cartItems   CartItem[]
 
     @@map("products")
 }
