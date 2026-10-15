@@ -148,3 +148,29 @@ export const changeQuantity = asyncHandler(async(req, res, next)=> {
         }
     })
 })
+
+/**
+ * @desc    Get cart items
+ * @route   GET /api/v1/cart
+ * @access  Private (user himself)
+ */
+export const getCart = asyncHandler(async(req, res, next)=> {
+
+    const userId = req.user.id;
+
+    const cart = await prisma.cartItem.findMany({
+        where: {
+            userId
+        },
+        include: {
+            product: true
+        }
+    })
+
+    res.status(200).json({
+        success: true,
+        data: {
+            cart
+        }
+    })
+})
