@@ -11,10 +11,11 @@ model User {
     role                   USER_ROLE  @default(USER)
     defaultShippingAddress String?
     defaultBillingAddress  String?
-    addresses              Address[]  @relation("AddAddresses")
     created_at             DateTime   @default(now())
     updated_at             DateTime   @updatedAt
+    addresses              Address[]
     cartItems              CartItem[]
+    orders                 Order[]
 
     @@map("users")
 }
