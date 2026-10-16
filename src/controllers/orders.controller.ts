@@ -86,14 +86,14 @@ export const createOrder = asyncHandler(async(req, res, next)=> {
  */
 export const cancelOrder = asyncHandler(async(req, res, next)=> {
 
-    const { orderId } = req.params;
+    const { id } = req.params;
     const userId = req.user.id;
 
     await prisma.$transaction(async(tx)=> {
 
         const order = await tx.order.findUnique({
             where: {
-                id: orderId
+                id
             }
         })
 
@@ -108,7 +108,7 @@ export const cancelOrder = asyncHandler(async(req, res, next)=> {
 
         await tx.order.update({
             where: {
-                id: orderId
+                id
             },
             data: {
                 status: "CANCELLED"
@@ -117,7 +117,7 @@ export const cancelOrder = asyncHandler(async(req, res, next)=> {
         
         await tx.orderEvent.create({
             data: {
-                orderId,
+                orderId: id,
                 status: "CANCELLED"
             }
         })
@@ -160,11 +160,11 @@ export const listOrder = asyncHandler(async(req, res, next)=> {
  */
 export const getOrderById = asyncHandler(async(req, res, next)=> {
 
-    const { orderId } = req.body;
+    const { id } = req.params;
 
     const order = await prisma.order.findUnique({
         where: {
-            id: orderId
+            id
         },
         include: {
             products: true,
