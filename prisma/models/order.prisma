@@ -7,13 +7,14 @@ enum OrderEventStatus {
 }
 
 model Order {
-    id         String         @id @default(uuid())
+    id         String           @id @default(uuid())
     userId     String
-    user       User           @relation(fields: [userId], references: [id])
+    user       User             @relation(fields: [userId], references: [id])
     amount     Decimal
     address    String
-    created_at DateTime       @default(now())
-    updated_at DateTime       @updatedAt
+    status     OrderEventStatus @default(PENDING)
+    created_at DateTime         @default(now())
+    updated_at DateTime         @updatedAt
     products   OrderProduct[]
     events     OrderEvent[]
 

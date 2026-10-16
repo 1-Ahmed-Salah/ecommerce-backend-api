@@ -49,6 +49,9 @@ export const createOrder = asyncHandler(async(req, res, next)=> {
                         }
                     })
                 }
+            },
+            include: {
+                events: true
             }
         })
 
@@ -72,6 +75,107 @@ export const createOrder = asyncHandler(async(req, res, next)=> {
         message: "order created successfully",
         data: {
             order: result.order
+        }
+    })
+})
+
+/**
+ * @desc    Cancel an order
+ * @route   GET /api/v1/orders/:id
+ * @access  Private (user himself)
+ */
+export const cancelOrder = asyncHandler(async(req, res, next)=> {
+
+    const { orderId } = req.params;
+    const userId = req.user.id;
+
+    await prisma.$transaction(async(tx)=> {
+
+        const order = await tx.order.findUnique({
+            where: {
+                id: orderId
+            }
+        })
+
+        if(!order) {
+            throw new ApiError("order does not exist", 404)
+        }
+
+        // check if order belong to user
+        if(order.userId !== userId) {
+            throw new ApiError("Unauthorized", 401)
+        }
+
+        await tx.order.update({
+            where: {
+                id: orderId
+            },
+            data: {
+                status: "CANCELLED"
+            }
+        })
+        
+        await tx.orderEvent.create({
+            data: {
+                orderId,
+                status: "CANCELLED"
+            }
+        })
+
+    })
+
+    res.status(200).json({
+        success: true,
+        message: "order cancelled successfully"
+    })
+})
+
+/**
+ * @desc    List orders
+ * @route   GET /api/v1/orders
+ * @access  Private (user logged in)
+ */
+export const listOrder = asyncHandler(async(req, res, next)=> {
+
+    const userId = req.user.id;
+
+    const orders = await prisma.order.findMany({
+        where: {
+            userId
+        }
+    })
+
+    res.status(200).json({
+        success: true,
+        data: {
+            orders
+        }
+    })
+})
+
+/**
+ * @desc    Get order by id
+ * @route   GET /api/v1/orders/:id
+ * @access  Private (user logged in)
+ */
+export const getOrderById = asyncHandler(async(req, res, next)=> {
+
+    const { orderId } = req.body;
+
+    const order = await prisma.order.findUnique({
+        where: {
+            id: orderId
+        },
+        include: {
+            products: true,
+            events: true
+        }
+    })
+
+    res.status(200).json({
+        success: true,
+        data: {
+            order
         }
     })
 })
