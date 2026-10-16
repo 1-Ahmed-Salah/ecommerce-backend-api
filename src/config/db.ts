@@ -6,7 +6,25 @@ import { DATABASE_URL } from "../secrets";
 const connectionString = `${DATABASE_URL}`;
 const adapter = new PrismaPg({ connectionString });
 
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient({ adapter })
+    .$extends({
+        result: {
+            address: {
+                formattedAddress: {
+                    needs: {
+                        lineOne: true,
+                        lineTwo: true,
+                        city: true,
+                        country: true,
+                        pincode: true
+                    },
+                    compute(addr) {
+                        return `${addr.lineOne}, ${addr.lineTwo}, ${addr.city}, ${addr.country}, ${addr.pincode}`;
+                    } 
+                }
+            }
+        }
+    });
 
 async function connectDB() {
     try {

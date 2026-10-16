@@ -14,7 +14,7 @@ model Order {
     address    String
     created_at DateTime       @default(now())
     updated_at DateTime       @updatedAt
-    orders     OrderProduct[]
+    products   OrderProduct[]
     events     OrderEvent[]
 
     @@map("orders")
