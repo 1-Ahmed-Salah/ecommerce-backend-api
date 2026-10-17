@@ -180,3 +180,33 @@ export const getOrderById = asyncHandler(async(req, res, next)=> {
     })
 })
 
+/**
+ * @desc    List all orders
+ * @route   GET /api/v1/orders
+ * @access  Private (admin)
+ */
+export const listAllOrders = asyncHandler(async(req, res, next)=> {
+    const page = +req.query.page! || 1;
+    const limit = +req.query.limit! || 10;
+
+    const skip = (page -1) * limit;
+
+    const [orders, totalOrders] = await Promise.all([
+        await prisma.order.findMany({
+            skip,
+            take: limit
+        }),
+        await prisma.order.count()
+    ]);
+
+    res.status(200).json({
+        success: true,
+        count: totalOrders,
+        data: {
+            orders
+        }
+    })
+})
+
+
+
