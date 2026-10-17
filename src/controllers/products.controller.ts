@@ -163,3 +163,35 @@ export const getProductById = asyncHandler(async(req, res, next)=> {
         }
     })
 })
+
+/**
+ * @desc    Search on products
+ * @route   GET /api/v1/products
+ * @access  Public
+ */
+export const searchProducts = asyncHandler(async(req, res, next)=> {
+
+    const query = req.query.query?.toString();
+    
+    const products = await prisma.product.findMany({
+        where: {
+            name: {
+                search: query
+            },
+            description: {
+                search: query
+            },
+            tags: {
+                search: query
+            },
+        }
+    })
+
+    res.status(200).json({
+        success: true,
+        data: {
+            products
+        }
+    })
+})
+
