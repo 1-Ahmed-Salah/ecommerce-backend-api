@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { protect, RBAC, validateRequest } from "../middlewares";
-import { createProduct, deleteProduct, getProductById, listProducts, updaateProduct } from "../controllers/products.controller";
+import { createProduct, deleteProduct, getProductById, listProducts, searchProducts, updaateProduct } from "../controllers/products.controller";
 import { USER_ROLE } from "../../generated/prisma/enums";
 import { createProductValidate, updateProductValidate } from "../validators";
 
@@ -35,5 +35,10 @@ router.route('/:id')
         deleteProduct
     )
 
+router.route("/search-products")
+    .get(
+        protect,
+        searchProducts
+    )
 
 export default router;
