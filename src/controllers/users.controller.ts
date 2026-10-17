@@ -1,6 +1,7 @@
 import { asyncHandler, ApiError } from "../utils";
 import { prisma } from "../config/db";
 import { Address } from "../../generated/prisma/client";
+import { success } from "zod";
 
 /**
  * @desc    Update user
@@ -63,4 +64,61 @@ export const updateUser = asyncHandler(async(req, res, next)=> {
         message: "user updated successfully"
     })
 })
+
+/**
+ * @desc    List users
+ * @route   GET /api/v1/users
+ * @access  Private (admin)
+ */
+export const listUsers = asyncHandler(async(req, res, next)=> {
+
+    const page = +req.query.page! || 1;
+    const limit = +req.query.limit! || 10;
+
+    const skip = (page -1) * limit;
+
+    const [users, totalUsers] = await Promise.all([
+        await prisma.user.findMany({
+            skip,
+            take: limit
+        }),
+        await prisma.user.count()
+    ]);
+
+    res.status(200).json({
+        success: true,
+        count: totalUsers,
+        data: {
+            users
+        }
+    })
+})
+
+/**
+ * @desc    Get user by id
+ * @route   GET /api/v1/users/:id
+ * @access  Private (admin)
+ */
+export const getUserById = asyncHandler(async(req, res, next)=> {
+
+    const { id } = req.params;
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id
+        }
+    })
+
+    if(!user) {
+        return next(new ApiError("user not found", 404));
+    }
+
+    res.status(200).json({
+        success: true,
+        data: {
+            user
+        }
+    })
+})
+
 
