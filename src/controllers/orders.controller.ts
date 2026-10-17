@@ -1,5 +1,6 @@
 import { asyncHandler, ApiError } from "../utils";
 import { prisma } from "../config/db";
+import { includes } from "zod";
 
 /**
  * @desc    Create an order 
@@ -177,6 +178,130 @@ export const getOrderById = asyncHandler(async(req, res, next)=> {
         data: {
             order
         }
+    })
+})
+
+/**
+ * @desc    List all orders
+ * @route   GET /api/v1/orders/allOrders
+ * @access  Private (admin)
+ */
+export const listAllOrders = asyncHandler(async(req, res, next)=> {
+    const page = +req.query.page! || 1;
+    const limit = +req.query.limit! || 10;
+
+    const skip = (page -1) * limit;
+
+    const [orders, totalOrders] = await Promise.all([
+        await prisma.order.findMany({
+            skip,
+            take: limit
+        }),
+        await prisma.order.count()
+    ]);
+
+    res.status(200).json({
+        success: true,
+        count: totalOrders,
+        data: {
+            orders
+        }
+    })
+})
+
+/**
+ * @desc    Change order status
+ * @route   put /api/v1/orders/change-status/:id
+ * @access  Private (admin)
+ */
+export const changeStatus = asyncHandler(async(req, res, next)=> {
+
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const result = await prisma.$transaction(async (tx)=> {
+
+        const order = await tx.order.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if(!order) {
+            throw new ApiError("order not found", 404);
+        }
+
+        const updatedOrderStatus = await tx.order.update({
+            where: {
+                id: order.id
+            },
+            data: {
+                status
+            }
+        })
+
+        if(!order) {
+            throw new ApiError("something went wrong", 400);
+        }
+
+        const newOrderEvent = await tx.orderEvent.create({
+            data: {
+                orderId: order.id,
+                status
+            }
+        })
+
+        if(!newOrderEvent) {
+            throw new ApiError("something went wrong", 400);
+        }
+
+        return { updatedOrderStatus, newOrderEvent }
+    })
+
+    res.status(200).json({
+        success: true,
+        message: "order status changed successfully",
+        data: {
+            order: {
+                ...result.updatedOrderStatus
+            },
+            event: {
+                ...result.newOrderEvent
+            }
+        }
+    })
+})
+
+/**
+ * @desc    List user orders
+ * @route   put /api/v1/orders/listUserOrders/:id
+ * @access  Private (admin)
+ */
+export const listUserOrders = asyncHandler(async(req, res, next)=> {
+
+    const { id } = req.params;
+
+    const page = +req.query.page! || 1;
+    const limit = +req.query.limit! || 10;
+
+    const skip = (page -1) * limit;
+
+    const orders = await prisma.order.findMany({
+        where: {
+            userId: id
+        },
+        include: {
+            user: true
+        },
+        skip,
+        take: limit
+    })
+
+    res.status(200).json({
+        success: true,
+        data: {
+            orders,
+        }  
     })
 })
 
