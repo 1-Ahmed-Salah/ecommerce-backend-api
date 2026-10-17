@@ -121,4 +121,47 @@ export const getUserById = asyncHandler(async(req, res, next)=> {
     })
 })
 
+/**
+ * @desc    Change user role
+ * @route   PUT /api/v1/users/:id
+ * @access  Private (admin)
+ */
+export const changeUserRole = asyncHandler(async(req, res, next)=> {
+
+    const { id } = req.params;
+    const { role } = req.body;
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id
+        }
+    })
+
+    if(!user) {
+        return next(new ApiError("user not found", 404));
+    }
+
+    const updatedUserRole = await prisma.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            role
+        }
+    })
+
+    if(!updatedUserRole) {
+        return next(new ApiError("something went wrong", 400));
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "user role updated successfully",
+        data: {
+            user: {
+                ...updatedUserRole
+            }
+        }
+    })
+})
 
