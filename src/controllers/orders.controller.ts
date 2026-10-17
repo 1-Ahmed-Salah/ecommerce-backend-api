@@ -1,5 +1,6 @@
 import { asyncHandler, ApiError } from "../utils";
 import { prisma } from "../config/db";
+import { includes } from "zod";
 
 /**
  * @desc    Create an order 
@@ -271,4 +272,36 @@ export const changeStatus = asyncHandler(async(req, res, next)=> {
     })
 })
 
+/**
+ * @desc    List user orders
+ * @route   put /api/v1/orders/listUserOrders/:id
+ * @access  Private (admin)
+ */
+export const listUserOrders = asyncHandler(async(req, res, next)=> {
+
+    const { id } = req.params;
+
+    const page = +req.query.page! || 1;
+    const limit = +req.query.limit! || 10;
+
+    const skip = (page -1) * limit;
+
+    const orders = await prisma.order.findMany({
+        where: {
+            userId: id
+        },
+        include: {
+            user: true
+        },
+        skip,
+        take: limit
+    })
+
+    res.status(200).json({
+        success: true,
+        data: {
+            orders,
+        }  
+    })
+})
 

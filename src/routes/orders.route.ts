@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { protect, RBAC } from "../middlewares";
-import { cancelOrder, changeStatus, createOrder, getOrderById, listAllOrders, listOrder } from "../controllers/orders.controller";
+import { cancelOrder, changeStatus, createOrder, getOrderById, listAllOrders, listOrder, listUserOrders } from "../controllers/orders.controller";
 import { USER_ROLE } from "../../generated/prisma/enums";
 
 const router = Router();
@@ -20,6 +20,13 @@ router.route('/allOrders')
         protect,
         RBAC(USER_ROLE.ADMIN),
         listAllOrders
+    )
+
+router.route('/listUserOrders/:id')
+    .get(
+        protect,
+        RBAC(USER_ROLE.ADMIN),
+        listUserOrders
     )
 
 router.route('/:id')
